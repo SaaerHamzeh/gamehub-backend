@@ -35,6 +35,11 @@ class BuffetItemSerializer(serializers.ModelSerializer):
         model = BuffetItem
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['price'] = float(data['price'])
+        return data
+
 class SessionOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = SessionOrder
@@ -46,7 +51,7 @@ class SessionOrderSerializer(serializers.ModelSerializer):
         """
         return {
             "name": instance.item_name,
-            "price": instance.price,
+            "price": float(instance.price),
             "time": instance.timestamp.isoformat()
         }
 
