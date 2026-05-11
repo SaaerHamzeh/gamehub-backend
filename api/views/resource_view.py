@@ -4,7 +4,7 @@ from api.serializers import ResourceTypeSerializer, ResourceUnitSerializer
 from .permissions_view import PermissionByActionMixin, IsStaffOrOwner, IsOwner, IsManagerOrOwner
 
 class ResourceTypeViewSet(PermissionByActionMixin, viewsets.ModelViewSet):
-    queryset = ResourceType.objects.all()
+    queryset = ResourceType.objects.filter(is_active=True)
     serializer_class = ResourceTypeSerializer
     permission_classes = [IsManagerOrOwner]
     permission_action_map = {
@@ -15,7 +15,7 @@ class ResourceTypeViewSet(PermissionByActionMixin, viewsets.ModelViewSet):
     }
 
 class ResourceUnitViewSet(PermissionByActionMixin, viewsets.ModelViewSet):
-    queryset = ResourceUnit.objects.select_related("branch", "resource_type").all()
+    queryset = ResourceUnit.objects.select_related("branch", "resource_type").filter(is_active=True)
     serializer_class = ResourceUnitSerializer
     permission_classes = [IsManagerOrOwner]
     permission_action_map = {

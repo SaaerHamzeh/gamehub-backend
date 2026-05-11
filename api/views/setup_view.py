@@ -76,6 +76,9 @@ class BulkSetupView(APIView):
                     )
             type_map[obj.code] = obj
 
+        incoming_type_codes = [item["code"] for item in resource_types]
+        ResourceType.objects.exclude(code__in=incoming_type_codes).update(is_active=False)
+
         for item in resource_units:
             resource_type = type_map[item["resource_type_code"]]
             ResourceUnit.objects.update_or_create(
@@ -89,6 +92,9 @@ class BulkSetupView(APIView):
                     "is_active": item.get("is_active", True),
                 }
             )
+
+        incoming_unit_codes = [item["code"] for item in resource_units]
+        ResourceUnit.objects.filter(branch=branch).exclude(code__in=incoming_unit_codes).update(is_active=False)
 
         # ─── Inventory ───────────────────────────────────────────────────────
         category_map = {}
@@ -126,6 +132,8 @@ class BulkSetupView(APIView):
                         resource_name=obj.name,
                         description=f"System update: Price changed from {old_p} to {new_p}"
                     )
+
+        InventoryItem.objects.filter(category__in=category_map.values()).exclude(name__in=incoming_item_names).update(is_active=False)
 
         return Response(
             {"message": "Bulk setup synced successfully", "branch_id": branch.id}

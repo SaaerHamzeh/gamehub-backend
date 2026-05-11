@@ -17,7 +17,7 @@ class InventoryCategoryViewSet(PermissionByActionMixin, viewsets.ModelViewSet):
 class InventoryItemViewSet(PermissionByActionMixin, viewsets.ModelViewSet):
     queryset = InventoryItem.objects.select_related(
         "category", "category__branch"
-    ).all()
+    ).filter(is_active=True)
     serializer_class = InventoryItemSerializer
     permission_classes = [IsManagerOrOwner]
     permission_action_map = {
